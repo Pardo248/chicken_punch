@@ -66,7 +66,12 @@ unsigned int indices[] = {
 	33,34,35
 };
 
-std::vector<vec3> posCube = { vec3(.0f, 4.0f, 0.0f) };
+struct FallingCube {
+    vec3 position;
+    float speed;
+};
+
+std::vector<FallingCube> posCube;// = { vec3(.0f, 4.0f, 0.0f) , 1.0f };
 /*vec3 posCube[] = {
 	vec3(0.0f,  4.0f,  0.0f),
 	vec3(2.0f,  5.0f, 0.0f),
@@ -90,6 +95,6 @@ vec3 posCubeLight[] = {
 
 // gravedad
 vec3 cuboVel = vec3(0.0f, 0.0f, 0.0f);  
-//float gravedad = -9.81f;         
+float gravedad = -9.81f;         
 
 

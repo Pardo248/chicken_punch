@@ -78,6 +78,7 @@ void updatePhysics(float deltaTime);
 bool AABBIntersect(AABB box1, AABB box2);
 AABB GenerateBoindingBox(vec3 position, float w, float h, float d);
 bool DetecCollision();
+bool CheckCollision(const vec3& cube1Pos, const vec3& cube2Pos, float size1, float size2);
 
 // Límites para la proyección ortogonal
 float leftCam = -6.0f;
@@ -127,6 +128,15 @@ int main()
 	Model ourModel("Modelos/backpack/egg_obj.obj");
 
 	//updateWindow(window, ourShader, ourModel);
+
+	// Generar cubos al inicio
+	for (int i = 0; i < 5; ++i) {
+		float x = ((rand() % 200) / 100.0f - 1.0f) * width/80; // posición x aleatoria
+		float y = 12.5f;                                     // parte superior de la pantalla
+		float speed = ((rand() % 100) / 100.0f) * 1.0f + 0.5f; // velocidad aleatoria
+
+		posCube.push_back({ vec3(x, y, 0.0f), speed });
+	}
 
 	updateWindow(window, ourShader, ourLight, ourShaderPiso, ourModel);
 	
@@ -202,30 +212,30 @@ void PlayerInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		posCube[0].y += 0.01f;
+		posCube[0].position.y += 0.01f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		posCube[0].y -= 0.01f;
+		posCube[0].position.y -= 0.01f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		posCube[0].x -= 0.01f;
+		posCube[0].position.x -= 0.01f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		posCube[0].x += 0.01f;
+		posCube[0].position.x += 0.01f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 	{
-		//gravedadActive = true;
+		gravedadActive = true;
 	}
 	if (DetecCollision())
 	{
-		//cuboVel.y = 1;
-		//posCube[0].y = pisoPosCube[0].y;
-		//tam = 2;
-		posCube.push_back(vec3(0.0f, 4.0f, 0.0f));
+
+
+		
+		//posCube.push_back(vec3(x, y, 0.0f));
 	}
 }
 void Mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
@@ -267,7 +277,7 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 			updatePhysics(deltaTime);
 		}
 
-		glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		glClearColor(0.1f, 0.2f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		ourShader.use();
@@ -282,6 +292,32 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 		ourShader.setVec3("material.diffuse", 0.0f, 0.5f, 1.0f);
 		ourShader.setVec3("material.specular", 0.5f, 0.5f, 1.5f);
 		ourShader.setFloat("material.shininess", 32.0f);
+
+		for (auto& cube : posCube) {
+			cube.position.y -= cube.speed * deltaTime;
+
+			// Reposicionar cubo en la parte superior si sale de la pantalla
+			if (cube.position.y < 0.0f) {
+				cube.position.y = 12.5f;
+				cube.position.x = ((rand() % 200) / 100.0f - 1.0f) * width / 80; // posición x aleatoria
+				cube.speed = ((rand() % 100) / 100.0f) * 1.0f + 1.5f;
+			}
+		}
+			/*// Verificar colisión con el cubo jugador
+			if (CheckCollision(pos, cube.position, 0.5f, 0.2f)) {
+				isColliding = true;
+			}
+			shader.setVec3("overrideColor", vec3(1.0f, 1.0f, 1.0f));
+			TransformCubo2(shader, cube.position);
+		}
+
+		// Cambiar color del cubo principal según colisión
+		if (isColliding) {
+			shader.setVec3("overrideColor", vec3(1.0f, 0.0f, 0.0f));  // Rojo
+		}
+		else {
+			shader.setVec3("overrideColor", vec3(1.0f, 1.0f, 1.0f));  // Blanco o el color original
+		}*/
 
 		TransformCamera(ourShader);
 		TransformCubo(ourShader,ourModel);
@@ -367,11 +403,17 @@ void TransformCubo(Shader ourShader, Model ourModel)
 	for (int i = 0; i < tam; i++)
 	{
 		mat4 modelo = mat4(1.0f);
-		modelo = translate(modelo, posCube[i]);
+		modelo = translate(modelo, posCube[i].position);
 		//modelo = rotate(modelo, radians(20.0f * i), vec3(1.0f, 0.3f, 0.5f));
 		ourShader.setMat4("model", modelo);
 
-		ourModel.Draw(ourShader);
+		if (i != 0)
+		{
+			ourModel.Draw(ourShader);
+		}else
+		{
+			posCube[i].speed = 0.0f;
+		}
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 	}
 
@@ -416,8 +458,14 @@ void CameraUniform(Shader shaderName)
 
 void updatePhysics(float deltaTime)
 {
-	//cuboVel.y += gravedad * deltaTime;
-	//posCube[0].y += cuboVel.y * deltaTime;
+	int tam = posCube.size();
+	cuboVel.y = 0.1;// * deltaTime;
+
+	for (int i = 1; i < tam; i++)
+	{
+		posCube[i].position.y -= posCube[i].speed;//cuboVel.y *deltaTime;
+	}
+	
 
 	/*if (posCube[0].y < 0.0f)
 	{
@@ -446,7 +494,7 @@ AABB GenerateBoindingBox(vec3 position, float w, float h, float d)
 bool DetecCollision()
 {
 	bool col = false;
-	AABB cubeBox = GenerateBoindingBox(posCube[0], 1.0f, 1.0f, 1.0f);
+	AABB cubeBox = GenerateBoindingBox(posCube[0].position, 1.0f, 1.0f, 1.0f);
 	AABB floorBox = GenerateBoindingBox(pisoPosCube[0], 5.0f, 0.1f, 5.0f);
 
 	if (AABBIntersect(cubeBox, floorBox))
@@ -454,4 +502,9 @@ bool DetecCollision()
 		col = true;
 	}
 	return col;
+}
+
+bool CheckCollision(const vec3& cube1Pos, const vec3& cube2Pos, float size1, float size2) {
+	return abs(cube1Pos.x - cube2Pos.x) < (size1 + size2) / 2 &&
+		abs(cube1Pos.y - cube2Pos.y) < (size1 + size2) / 2;
 }
