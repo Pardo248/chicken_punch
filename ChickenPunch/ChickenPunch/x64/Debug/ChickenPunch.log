@@ -1,0 +1,16 @@
+﻿  main.cpp
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(129,8): error C2512: 'Model': no hay disponible un constructor predeterminado adecuado
+      E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(129,8):
+      'Model::Model': no hay disponible un constructor predeterminado adecuado
+          E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(129,8):
+          al hacer coincidir la lista de argumentos '()'
+  
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(284,28): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(290,20): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(441,10): warning C4267: 'inicializando': conversión de 'size_t' a 'int'; posible pérdida de datos
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(501,10): warning C4267: 'inicializando': conversión de 'size_t' a 'int'; posible pérdida de datos
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(502,14): warning C4305: '=': truncamiento de 'double' a 'T'
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(502,14): warning C4305:         with
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(502,14): warning C4305:         [
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(502,14): warning C4305:             T=float
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(502,14): warning C4305:         ]
