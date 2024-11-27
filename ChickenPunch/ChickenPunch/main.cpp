@@ -12,12 +12,14 @@
 #include "Cubo.h"
 #include "Piso.h"
 #include "Camera.h"
+#include "Model.h"
+#include "stb_image.h"
 
 
 
 using namespace std;
 
-constexpr unsigned width = 1200;
+constexpr unsigned width = 500;
 constexpr unsigned height = 900;
 
 unsigned int VBO, VAO, EBO;
@@ -45,7 +47,7 @@ struct AABB {
 
 void initGLFWVersion();
 bool gladLoad();
-void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader ourShaderPiso);
+void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader ourShaderPiso, Model ourModel);
 
 void framebuffer_size_callback(GLFWwindow* window, int w, int h);
 void processInput(GLFWwindow* window);
@@ -110,6 +112,8 @@ int main()
 	//glfwSetCursorPosCallback(window, Mouse_callback);
 	//glfwSetScrollCallback(window, Scroll_callback);
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	stbi_set_flip_vertically_on_load(true);
 	
 	glEnable(GL_DEPTH_TEST);
 
@@ -119,8 +123,12 @@ int main()
 
 	GeneracionBuffer(VAO, VBO, EBO, vertices, sizeof(vertices), indices, sizeof(indices), VAO_L);
 	GeneracionBuffer(VAO_P, VBO_P, EBO_P, pisoVertices, sizeof(pisoVertices), pisoIndices, sizeof(pisoIndices), VAO_L);
-	
-	updateWindow(window, ourShader, ourLight, ourShaderPiso);
+
+	Model ourModel("Modelos/backpack/egg_obj.obj");
+
+	//updateWindow(window, ourShader, ourModel);
+
+	updateWindow(window, ourShader, ourLight, ourShaderPiso, ourModel);
 	
 	DeleteVertexArrays(VAO);
 	DeleteVertexArrays(VAO_L);
@@ -244,7 +252,7 @@ void Scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll(yoffset);
 }
-void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader ourShaderPiso)
+void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader ourShaderPiso, Model ourModel)
 {
 	while (!glfwWindowShouldClose(window))
 	{
@@ -295,6 +303,8 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 	
 		CameraUniform(ourShaderPiso);
 		TransformPiso(ourShaderPiso);
+
+		ourModel.Draw(ourShader);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();

@@ -1,7 +1,13 @@
 ﻿  main.cpp
-E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(245,28): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
-E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(251,20): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
-E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(355,10): warning C4267: 'inicializando': conversión de 'size_t' a 'int'; posible pérdida de datos
-  ChickenPunch.vcxproj -> E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\x64\Debug\ChickenPunch.exe
-  "pwsh.exe" no se reconoce como un comando interno o externo,
-  programa o archivo por lotes ejecutable.
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\Model.h(249,27): error C3861: 'stbi_load': no se encontró el identificador
+  (compilando archivo de origen "main.cpp")
+  
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\Model.h(269,9): error C3861: 'stbi_image_free': no se encontró el identificador
+  (compilando archivo de origen "main.cpp")
+  
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\Model.h(274,9): error C3861: 'stbi_image_free': no se encontró el identificador
+  (compilando archivo de origen "main.cpp")
+  
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(253,28): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(259,20): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(365,10): warning C4267: 'inicializando': conversión de 'size_t' a 'int'; posible pérdida de datos
