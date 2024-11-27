@@ -17,14 +17,12 @@
 
 using namespace std;
 
-constexpr unsigned width = 500;
-constexpr unsigned height = 300;
+constexpr unsigned width = 1200;
+constexpr unsigned height = 900;
 
 unsigned int VBO, VAO, EBO;
 unsigned int VBO_P, VAO_P, EBO_P;
 unsigned int VAO_L;
-
-//int tam = 1;
 
 mat4 projection, view;
 
@@ -79,6 +77,14 @@ bool AABBIntersect(AABB box1, AABB box2);
 AABB GenerateBoindingBox(vec3 position, float w, float h, float d);
 bool DetecCollision();
 
+// Límites para la proyección ortogonal
+float leftCam = -6.0f;
+float rightCam = 6.0f;
+float bottom = -2.5f;
+float top = 10.0f;
+float near = 0.1f;
+float far = 100.0f;
+
 
 int main()
 {
@@ -101,9 +107,9 @@ int main()
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 	
-	glfwSetCursorPosCallback(window, Mouse_callback);
-	glfwSetScrollCallback(window, Scroll_callback);
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	//glfwSetCursorPosCallback(window, Mouse_callback);
+	//glfwSetScrollCallback(window, Scroll_callback);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 	
 	glEnable(GL_DEPTH_TEST);
 
@@ -216,7 +222,7 @@ void PlayerInput(GLFWwindow* window)
 }
 void Mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
-	float xpos = xposIn;
+	/*float xpos = xposIn;
 	float ypos = yposIn;
 
 	if (firstMouse)
@@ -232,7 +238,7 @@ void Mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 	lastX = xpos;
 	lastY = ypos;
 
-	camera.ProcessMouseMovement(xoffset, yoffset);
+	camera.ProcessMouseMovement(xoffset, yoffset);*/
 }
 void Scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
@@ -364,6 +370,7 @@ void TransformPiso(Shader ourShader)
 	glBindVertexArray(VAO_P);
 	mat4 modelo = mat4(1.0f);
 	modelo = translate(modelo, pisoPosCube[0]);
+
 	ourShader.setMat4("model", modelo);
 	glDrawElements(GL_TRIANGLES, sizeof(pisoIndices) / sizeof(pisoIndices[0]), GL_UNSIGNED_INT, 0);
 }
@@ -384,7 +391,7 @@ void TransformCuboLight(Shader ourLight)
 
 void TransformCamera(Shader ourShader)
 {
-	projection = perspective(radians(camera.Zoom), (float)width / (float)height, 0.1f, 100.0f);
+	projection = ortho(leftCam, rightCam, bottom, top, near, far);
 	view = camera.GetViewMatrix();
 
 	CameraUniform(ourShader);
