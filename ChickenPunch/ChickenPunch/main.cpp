@@ -47,7 +47,7 @@ struct AABB {
 
 void initGLFWVersion();
 bool gladLoad();
-void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader ourShaderPiso, Model ourModel);
+void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader ourShaderPiso, Model ourModel[]);
 
 void framebuffer_size_callback(GLFWwindow* window, int w, int h);
 void processInput(GLFWwindow* window);
@@ -68,7 +68,7 @@ void GeneracionBuffer(
 void VertexAttribute(int layout, int data, int total, int start);
 void DeleteVertexArrays(GLuint& VA);
 void DeleteBuffer(GLuint& VBO, GLuint& EBO);
-void TransformCubo(Shader ourShader, Model ourModel);
+void TransformCubo(Shader ourShader, Model ourModel[]);
 void TransformPiso(Shader ourShader);
 void TransformCuboLight(Shader ourLight);
 void TransformCamera(Shader ourShader);
@@ -125,11 +125,11 @@ int main()
 	GeneracionBuffer(VAO, VBO, EBO, vertices, sizeof(vertices), indices, sizeof(indices), VAO_L);
 	GeneracionBuffer(VAO_P, VBO_P, EBO_P, pisoVertices, sizeof(pisoVertices), pisoIndices, sizeof(pisoIndices), VAO_L);
 
-	Model ourModel("Modelos/backpack/egg_obj.obj");
+	//Model ourModel("Modelos/backpack/egg_obj.obj");
 	Model models[3] = {
 		Model("Modelos/backpack/egg_obj.obj"),
-		Model("Modelos/backpack/another_model.obj"),
-		Model("Modelos/backpack/yet_another_model.obj")
+		//Model("Modelos/backpack/another_model.obj"),
+		//Model("Modelos/backpack/yet_another_model.obj")
 	};
 
 	//updateWindow(window, ourShader, ourModel);
@@ -159,7 +159,7 @@ int main()
 		posCube.push_back({ vec3(x, y, 0.0f), speed ,type});
 	}
 
-	updateWindow(window, ourShader, ourLight, ourShaderPiso, ourModel);
+	updateWindow(window, ourShader, ourLight, ourShaderPiso, models);
 	
 	DeleteVertexArrays(VAO);
 	DeleteVertexArrays(VAO_L);
@@ -283,7 +283,7 @@ void Scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll(yoffset);
 }
-void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader ourShaderPiso, Model ourModel)
+void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader ourShaderPiso, Model ourModel[])
 {
 	while (!glfwWindowShouldClose(window))
 	{
@@ -436,7 +436,7 @@ void DeleteBuffer(GLuint& VBO, GLuint& EBO)
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 }
-void TransformCubo(Shader ourShader, Model ourModel)
+void TransformCubo(Shader ourShader, Model ourModel[])
 {
 	int tam = posCube.size();
 	glBindVertexArray(VAO);
@@ -449,7 +449,7 @@ void TransformCubo(Shader ourShader, Model ourModel)
 
 		if (i != 0)
 		{
-			ourModel.Draw(ourShader);
+			ourModel[0].Draw(ourShader);
 		}else
 		{
 			posCube[i].speed = 0.0f;
