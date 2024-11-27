@@ -126,16 +126,37 @@ int main()
 	GeneracionBuffer(VAO_P, VBO_P, EBO_P, pisoVertices, sizeof(pisoVertices), pisoIndices, sizeof(pisoIndices), VAO_L);
 
 	Model ourModel("Modelos/backpack/egg_obj.obj");
+	Model models[3] = {
+		Model("Modelos/backpack/egg_obj.obj"),
+		Model("Modelos/backpack/another_model.obj"),
+		Model("Modelos/backpack/yet_another_model.obj")
+	};
 
 	//updateWindow(window, ourShader, ourModel);
 
 	// Generar cubos al inicio
 	for (int i = 0; i < 5; ++i) {
-		float x = ((rand() % 200) / 100.0f - 1.0f) * width/80; // posición x aleatoria
-		float y = 12.5f;                                     // parte superior de la pantalla
+
+		float x;
+		float y;
+		int type;
+		
+		if (i != 0)
+		{
+			x = ((rand() % 200) / 100.0f - 1.0f) * width / 80; // posición x aleatoria
+			y = 12.5f;
+			type = 2;
+		}
+		else
+		{
+			x = 0;
+			y = 1.5f;
+			type = 1;
+		}
+		                                    // parte superior de la pantalla
 		float speed = ((rand() % 100) / 100.0f) * 1.0f + 0.5f; // velocidad aleatoria
 
-		posCube.push_back({ vec3(x, y, 0.0f), speed });
+		posCube.push_back({ vec3(x, y, 0.0f), speed ,type});
 	}
 
 	updateWindow(window, ourShader, ourLight, ourShaderPiso, ourModel);
@@ -296,11 +317,30 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 		for (auto& cube : posCube) {
 			cube.position.y -= cube.speed * deltaTime;
 
-			// Reposicionar cubo en la parte superior si sale de la pantalla
-			if (cube.position.y < 0.0f) {
-				cube.position.y = 12.5f;
-				cube.position.x = ((rand() % 200) / 100.0f - 1.0f) * width / 80; // posición x aleatoria
-				cube.speed = ((rand() % 100) / 100.0f) * 1.0f + 1.5f;
+			//Tipo 1 = Personaje
+			//tipo 2 = Huevos
+			if (cube.type == 2)
+			{
+				// Reposicionar cubo en la parte superior si sale de la pantalla
+				if (cube.position.y < 0.0f) {
+					cube.position.y = 12.5f;
+					cube.position.x = ((rand() % 200) / 100.0f - 1.0f) * width / 80; // posición x aleatoria
+					cube.speed = ((rand() % 100) / 100.0f) * 2.0f + 1.5f;
+				}
+			}
+			
+			//Limitar el movimiento del personaje
+			if (cube.type == 1)
+			{
+				cube.position.y = std::max(cube.position.y, 0.0f);
+				cube.position.x = std::max(cube.position.x, -5.5f);
+				cube.position.x = std::min(cube.position.x, 5.5f);
+				cube.position.y = std::min(cube.position.y, 5.5f);
+				
+				/*if (cube.position.y < 0.0f)
+				{
+					cube.position.y = 0.0f;
+				}*/
 			}
 		}
 			/*// Verificar colisión con el cubo jugador
