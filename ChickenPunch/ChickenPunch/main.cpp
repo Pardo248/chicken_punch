@@ -47,7 +47,7 @@ struct AABB {
 
 void initGLFWVersion();
 bool gladLoad();
-void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader ourShaderPiso, Model ourModel[]);
+void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader ourShaderPiso, std::vector<Model> models);
 
 void framebuffer_size_callback(GLFWwindow* window, int w, int h);
 void processInput(GLFWwindow* window);
@@ -68,7 +68,7 @@ void GeneracionBuffer(
 void VertexAttribute(int layout, int data, int total, int start);
 void DeleteVertexArrays(GLuint& VA);
 void DeleteBuffer(GLuint& VBO, GLuint& EBO);
-void TransformCubo(Shader ourShader, Model ourModel[]);
+void TransformCubo(Shader ourShader, std::vector<Model> models);
 void TransformPiso(Shader ourShader);
 void TransformCuboLight(Shader ourLight);
 void TransformCamera(Shader ourShader);
@@ -115,6 +115,7 @@ int main()
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	stbi_set_flip_vertically_on_load(true);
+	srand(time(0));  // Semilla para la aleatoriedad
 	
 	glEnable(GL_DEPTH_TEST);
 
@@ -125,36 +126,40 @@ int main()
 	GeneracionBuffer(VAO, VBO, EBO, vertices, sizeof(vertices), indices, sizeof(indices), VAO_L);
 	GeneracionBuffer(VAO_P, VBO_P, EBO_P, pisoVertices, sizeof(pisoVertices), pisoIndices, sizeof(pisoIndices), VAO_L);
 
-	//Model ourModel("Modelos/backpack/egg_obj.obj");
-	Model models[3] = {
-		Model("Modelos/backpack/egg_obj.obj"),
-		//Model("Modelos/backpack/another_model.obj"),
-		//Model("Modelos/backpack/yet_another_model.obj")
-	};
+	
+	std::vector<Model> models;
 
+	models.push_back(Model("Modelos/backpack/personaje.obj"));
+	models.push_back(Model("Modelos/backpack/egg_obj.obj"));
+	//models.push_back(Model("Modelos/backpack/Chick_lot(1).obj"));
+	models.push_back(Model("Modelos/backpack/bxglvsp(right).obj"));
+	
 	//updateWindow(window, ourShader, ourModel);
 
 	// Generar cubos al inicio
-	for (int i = 0; i < 5; ++i) {
+	for (int i = 0; i < 6; ++i) {
 
 		float x;
 		float y;
 		int type;
+		float speed;
 		
 		if (i != 0)
 		{
 			x = ((rand() % 200) / 100.0f - 1.0f) * width / 80; // posición x aleatoria
 			y = 12.5f;
-			type = 2;
+			speed = ((rand() % 100) / 100.0f) * 1.0f + 0.5f; // velocidad aleatoria
+			type = 2 + (rand() % 2);
+			//type = 2;
 		}
 		else
 		{
 			x = 0;
 			y = 1.5f;
 			type = 1;
+			speed = 0.0f;
 		}
 		                                    // parte superior de la pantalla
-		float speed = ((rand() % 100) / 100.0f) * 1.0f + 0.5f; // velocidad aleatoria
 
 		posCube.push_back({ vec3(x, y, 0.0f), speed ,type});
 	}
@@ -283,7 +288,7 @@ void Scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
 {
 	camera.ProcessMouseScroll(yoffset);
 }
-void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader ourShaderPiso, Model ourModel[])
+void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader ourShaderPiso, std::vector<Model> models)
 {
 	while (!glfwWindowShouldClose(window))
 	{
@@ -319,7 +324,8 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 
 			//Tipo 1 = Personaje
 			//tipo 2 = Huevos
-			if (cube.type == 2)
+			//tipo 3 = gallinas
+			if (cube.type == 2 || cube.type == 3)
 			{
 				// Reposicionar cubo en la parte superior si sale de la pantalla
 				if (cube.position.y < 0.0f) {
@@ -332,10 +338,10 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 			//Limitar el movimiento del personaje
 			if (cube.type == 1)
 			{
-				cube.position.y = std::max(cube.position.y, 0.0f);
-				cube.position.x = std::max(cube.position.x, -5.5f);
-				cube.position.x = std::min(cube.position.x, 5.5f);
-				cube.position.y = std::min(cube.position.y, 5.5f);
+				cube.position.y = std::max(cube.position.y, -1.5f);
+				cube.position.x = std::max(cube.position.x, -5.0f);
+				cube.position.x = std::min(cube.position.x, 5.0f);
+				cube.position.y = std::min(cube.position.y, 4.5f);
 				
 				/*if (cube.position.y < 0.0f)
 				{
@@ -360,7 +366,7 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 		}*/
 
 		TransformCamera(ourShader);
-		TransformCubo(ourShader,ourModel);
+		TransformCubo(ourShader,models);
 
 
 
@@ -436,7 +442,7 @@ void DeleteBuffer(GLuint& VBO, GLuint& EBO)
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 }
-void TransformCubo(Shader ourShader, Model ourModel[])
+void TransformCubo(Shader ourShader, std::vector<Model> models)
 {
 	int tam = posCube.size();
 	glBindVertexArray(VAO);
@@ -444,16 +450,19 @@ void TransformCubo(Shader ourShader, Model ourModel[])
 	{
 		mat4 modelo = mat4(1.0f);
 		modelo = translate(modelo, posCube[i].position);
-		//modelo = rotate(modelo, radians(20.0f * i), vec3(1.0f, 0.3f, 0.5f));
+		if (posCube[i].type == 1)
+		{
+			modelo = glm::rotate(modelo, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
+			modelo = glm::rotate(modelo, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		}
+		
 		ourShader.setMat4("model", modelo);
 
-		if (i != 0)
-		{
-			ourModel[0].Draw(ourShader);
-		}else
-		{
-			posCube[i].speed = 0.0f;
-		}
+		//models[2].Draw(ourShader);
+
+		models[posCube[i].type - 1].Draw(ourShader);
+
+		
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 	}
 
