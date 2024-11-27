@@ -69,7 +69,7 @@ unsigned int indices[] = {
 struct FallingCube {
     vec3 position;
     float speed;
-    int type;
+    int type; //1 personaje 2 huevo 3 gallina 
 };
 
 std::vector<FallingCube> posCube;// = { vec3(.0f, 4.0f, 0.0f) , 1.0f };
