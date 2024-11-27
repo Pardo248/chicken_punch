@@ -6,6 +6,7 @@
 #include "assimp/postprocess.h"
 
 #include "Mesh.h"
+#include "stb_image.h"
 
 using namespace Assimp;
 

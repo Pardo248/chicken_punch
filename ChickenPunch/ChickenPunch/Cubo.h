@@ -90,6 +90,6 @@ vec3 posCubeLight[] = {
 
 // gravedad
 vec3 cuboVel = vec3(0.0f, 0.0f, 0.0f);  
-float gravedad = -9.81f;         
+//float gravedad = -9.81f;         
 
 

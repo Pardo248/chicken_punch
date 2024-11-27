@@ -68,7 +68,7 @@ void GeneracionBuffer(
 void VertexAttribute(int layout, int data, int total, int start);
 void DeleteVertexArrays(GLuint& VA);
 void DeleteBuffer(GLuint& VBO, GLuint& EBO);
-void TransformCubo(Shader ourShader);
+void TransformCubo(Shader ourShader, Model ourModel);
 void TransformPiso(Shader ourShader);
 void TransformCuboLight(Shader ourLight);
 void TransformCamera(Shader ourShader);
@@ -202,11 +202,11 @@ void PlayerInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		posCube[0].z -= 0.01f;
+		posCube[0].y += 0.01f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		posCube[0].z += 0.01f;
+		posCube[0].y -= 0.01f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
@@ -218,12 +218,12 @@ void PlayerInput(GLFWwindow* window)
 	}
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 	{
-		gravedadActive = true;
+		//gravedadActive = true;
 	}
 	if (DetecCollision())
 	{
-		cuboVel.y = 0;
-		posCube[0].y = pisoPosCube[0].y;
+		//cuboVel.y = 1;
+		//posCube[0].y = pisoPosCube[0].y;
 		//tam = 2;
 		posCube.push_back(vec3(0.0f, 4.0f, 0.0f));
 	}
@@ -284,7 +284,7 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 		ourShader.setFloat("material.shininess", 32.0f);
 
 		TransformCamera(ourShader);
-		TransformCubo(ourShader);
+		TransformCubo(ourShader,ourModel);
 
 
 
@@ -304,7 +304,7 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 		CameraUniform(ourShaderPiso);
 		TransformPiso(ourShaderPiso);
 
-		ourModel.Draw(ourShader);
+		//ourModel.Draw(ourShader);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -360,7 +360,7 @@ void DeleteBuffer(GLuint& VBO, GLuint& EBO)
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 }
-void TransformCubo(Shader ourShader)
+void TransformCubo(Shader ourShader, Model ourModel)
 {
 	int tam = posCube.size();
 	glBindVertexArray(VAO);
@@ -370,6 +370,8 @@ void TransformCubo(Shader ourShader)
 		modelo = translate(modelo, posCube[i]);
 		//modelo = rotate(modelo, radians(20.0f * i), vec3(1.0f, 0.3f, 0.5f));
 		ourShader.setMat4("model", modelo);
+
+		ourModel.Draw(ourShader);
 		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 	}
 
@@ -414,8 +416,8 @@ void CameraUniform(Shader shaderName)
 
 void updatePhysics(float deltaTime)
 {
-	cuboVel.y += gravedad * deltaTime;
-	posCube[0].y += cuboVel.y * deltaTime;
+	//cuboVel.y += gravedad * deltaTime;
+	//posCube[0].y += cuboVel.y * deltaTime;
 
 	/*if (posCube[0].y < 0.0f)
 	{
