@@ -88,6 +88,21 @@ float top = 10.0f;
 float near = 0.1f;
 float far = 100.0f;
 
+// Vertices de un cuadrado
+vector<Vertex> verticesA = {
+	// Posiciones         // Normales          // TexCoords
+	{{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+	{{0.5f, -0.5f, 0.0f},  {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+	{{0.5f,  0.5f, 0.0f},  {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+	{{-0.5f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f, 0.0f}, {0.0f, 1.0f}}
+};
+
+// Indices para formar un cuadrado (dos triángulos)
+vector<unsigned int> indicesA = {
+	0, 1, 2, // Primer triángulo
+	2, 3, 0  // Segundo triángulo
+};
+
 
 int main()
 {
@@ -126,6 +141,12 @@ int main()
 	GeneracionBuffer(VAO, VBO, EBO, vertices, sizeof(vertices), indices, sizeof(indices), VAO_L);
 	GeneracionBuffer(VAO_P, VBO_P, EBO_P, pisoVertices, sizeof(pisoVertices), pisoIndices, sizeof(pisoIndices), VAO_L);
 
+
+	
+
+
+	// Especificar cuántas texturas vas a usar
+// Por ejemplo, si solo tienes una textura
 	
 	std::vector<Model> models;
 
@@ -133,7 +154,22 @@ int main()
 	models.push_back(Model("Modelos/backpack/egg_obj.obj"));
 	models.push_back(Model("Modelos/backpack/gallo.obj"));
 	models.push_back(Model("Modelos/backpack/guante.obj"));
-	
+
+
+	string directory = "Modelos/backpack";
+	string texturePath = "malla.jpg";
+	unsigned int textureID = TextureFromFile(texturePath.c_str(), directory);
+
+	// Configura la textura
+	Texture texture;
+	texture.id = textureID;
+	texture.type = "texture_diffuse";
+	texture.path = texturePath;
+
+	// Crear la malla con la textura
+	vector<Texture> textures = { texture };
+	Mesh mesh(verticesA, indicesA, textures);
+
 	//updateWindow(window, ourShader, ourModel);
 
 	// Generar cubos al inicio
@@ -325,7 +361,7 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 		
 		ourShader.setVec3("viewPos", camera.Position);
 
-		ourShader.setVec3("material.diffuse", 0.0f, 0.5f, 1.0f);
+		ourShader.setVec3("material.diffuse", 5.0f, 5.0f, 5.0f);
 		ourShader.setVec3("material.specular", 0.5f, 0.5f, 1.5f);
 		ourShader.setFloat("material.shininess", 32.0f);
 
