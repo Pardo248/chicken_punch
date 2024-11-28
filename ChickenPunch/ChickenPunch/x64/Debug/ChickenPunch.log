@@ -1,16 +1,1 @@
-﻿  main.cpp
-D:\programacion_videojuegos\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(129,8): error C2512: 'Model': no hay disponible un constructor predeterminado adecuado
-      D:\programacion_videojuegos\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(129,8):
-      'Model::Model': no hay disponible un constructor predeterminado adecuado
-          D:\programacion_videojuegos\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(129,8):
-          al hacer coincidir la lista de argumentos '()'
-  
-D:\programacion_videojuegos\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(284,28): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
-D:\programacion_videojuegos\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(290,20): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
-D:\programacion_videojuegos\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(441,10): warning C4267: 'inicializando': conversión de 'size_t' a 'int'; posible pérdida de datos
-D:\programacion_videojuegos\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(501,10): warning C4267: 'inicializando': conversión de 'size_t' a 'int'; posible pérdida de datos
-D:\programacion_videojuegos\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(502,14): warning C4305: '=': truncamiento de 'double' a 'T'
-D:\programacion_videojuegos\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(502,14): warning C4305:         with
-D:\programacion_videojuegos\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(502,14): warning C4305:         [
-D:\programacion_videojuegos\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(502,14): warning C4305:             T=float
-D:\programacion_videojuegos\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(502,14): warning C4305:         ]
+﻿  ChickenPunch.vcxproj -> D:\programacion_videojuegos\chicken_punch\ChickenPunch\x64\Debug\ChickenPunch.exe

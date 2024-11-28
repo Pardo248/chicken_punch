@@ -131,8 +131,9 @@ int main()
 
 	models.push_back(Model("Modelos/backpack/personaje.obj"));
 	models.push_back(Model("Modelos/backpack/egg_obj.obj"));
+	models.push_back(Model("Modelos/backpack/gallo.obj"));
 	//models.push_back(Model("Modelos/backpack/Chick_lot(1).obj"));
-	models.push_back(Model("Modelos/backpack/bxglvsp(right).obj"));
+	models.push_back(Model("Modelos/backpack/guante.obj"));
 	
 	//updateWindow(window, ourShader, ourModel);
 
