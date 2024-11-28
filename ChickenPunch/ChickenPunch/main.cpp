@@ -90,6 +90,20 @@ float near = 0.1f;
 float far = 100.0f;
 
 
+// Vertices de un cuadrado
+vector<Vertex> verticesA = {
+	// Posiciones         // Normales          // TexCoords
+	{{-0.5f, -0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
+	{{0.5f, -0.5f, 0.0f},  {0.0f, 0.0f, 1.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
+	{{0.5f,  0.5f, 0.0f},  {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
+	{{-0.5f,  0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f, 0.0f}, {0.0f, 1.0f}}
+};
+
+// Indices para formar un cuadrado (dos triángulos)
+vector<unsigned int> indicesA = {
+	0, 1, 2, // Primer triángulo
+	2, 3, 0  // Segundo triángulo
+};
 int main()
 {
 	initGLFWVersion();
@@ -135,6 +149,20 @@ int main()
 	models.push_back(Model("Modelos/backpack/gallo.obj"));
 	models.push_back(Model("Modelos/backpack/guante.obj"));
 
+
+	string directory = "Modelos/backpack";
+	string texturePath = "malla.jpg";
+	unsigned int textureID = TextureFromFile(texturePath.c_str(), directory);
+
+	// Configura la textura
+	Texture texture;
+	texture.id = textureID;
+	texture.type = "texture_diffuse";
+	texture.path = texturePath;
+
+	// Crear la malla con la textura
+	vector<Texture> textures = { texture };
+	Mesh mesh(verticesA, indicesA, textures);
 	//updateWindow(window, ourShader, ourModel);
 	float x;
 	float y;
@@ -335,8 +363,8 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 
 		ourShader.setVec3("viewPos", camera.Position);
 
-		ourShader.setVec3("material.diffuse", 0.0f, 0.5f, 1.0f);
-		ourShader.setVec3("material.specular", 0.5f, 0.5f, 1.5f);
+		ourShader.setVec3("material.diffuse", 5.0f, 5.0f, 5.0f);
+		ourShader.setVec3("material.specular", 0.5f, 0.5f, 0.5f);
 		ourShader.setFloat("material.shininess", 32.0f);
 
 		for (auto& cube : posCube) {
@@ -607,12 +635,13 @@ bool DetecCollision()
 bool colisionGuante()
 {
 	bool col = false;
+	int tam = 6;
 
 	// Generamos la caja de colisión para el jugador
 	AABB golpe = GenerateBoindingBox(posCube[6].position, 1.0f, 1.0f, 1.0f);
 
 	// Iteramos sobre los enemigos (posCube[1] hasta posCube[6])
-	for (int i = 1; i < 6; ++i)
+	for (int i = 1; i < tam; ++i)
 	{
 		// Generamos la caja de colisión para cada enemigo
 		AABB enemigo = GenerateBoindingBox(posCube[i].position, 1.0f, 1.0f, 1.0f);
