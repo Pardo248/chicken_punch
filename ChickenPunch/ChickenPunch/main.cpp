@@ -79,6 +79,7 @@ bool AABBIntersect(AABB box1, AABB box2);
 AABB GenerateBoindingBox(vec3 position, float w, float h, float d);
 bool DetecCollision();
 bool CheckCollision(const vec3& cube1Pos, const vec3& cube2Pos, float size1, float size2);
+bool colisionGuante();
 
 // Límites para la proyección ortogonal
 float leftCam = -6.0f;
@@ -132,7 +133,6 @@ int main()
 	models.push_back(Model("Modelos/backpack/personaje.obj"));
 	models.push_back(Model("Modelos/backpack/egg_obj.obj"));
 	models.push_back(Model("Modelos/backpack/gallo.obj"));
-	//models.push_back(Model("Modelos/backpack/Chick_lot(1).obj"));
 	models.push_back(Model("Modelos/backpack/guante.obj"));
 
 	//updateWindow(window, ourShader, ourModel);
@@ -140,6 +140,7 @@ int main()
 	float y;
 	int type;
 	float speed;
+
 	// Generar cubos al inicio
 	for (int i = 0; i < 6; ++i) {
 
@@ -160,13 +161,11 @@ int main()
 			type = 1;
 			speed = 0.0f;
 		}
-		
 		// parte superior de la pantalla
 
 		posCube.push_back({ vec3(x, y, 0.0f), speed ,type });
 	}
-	
-	posCube.push_back({ vec3(0, 1.5, 0.0f), 0 , 4 });
+	posCube.push_back({ vec3(0, 1.5, 0.0f), 0.0f ,4 });
 	updateWindow(window, ourShader, ourLight, ourShaderPiso, models);
 
 	DeleteVertexArrays(VAO);
@@ -237,37 +236,54 @@ void CameraInput(GLFWwindow* window)
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 	}
 }
+float moveStartTime = -1.0f;  // Almacena el momento en que se presiona F
+bool isMoving = false;        // Controla el estado del movimiento (avanzando o retrocediendo)
+
 void PlayerInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
 		posCube[0].position.y += 0.01f;
+		posCube[6].position.y += 0.01f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
 		posCube[0].position.y -= 0.01f;
+		posCube[6].position.y -= 0.01f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		posCube[0].position.x -= 0.01f;
+		posCube[6].position.x -= 0.01f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		posCube[0].position.x += 0.01f;
-		posCube[3].position.x += 0.01f;
+		posCube[6].position.x += 0.01f;
 	}
-	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
+
+	// Controlar el movimiento con la tecla F
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !isMoving)
 	{
-		gravedadActive = true;
+		moveStartTime = glfwGetTime();  // Guardar el tiempo en que se presiona F
+		posCube[6].speed = 1;
+		
 	}
+	// Si el cubo está en movimiento
+	if (posCube[6].speed != 0) {
+		colisionGuante();
+	}
+		
+		
+
 	if (DetecCollision())
 	{
-
-
-
-		//posCube.push_back(vec3(x, y, 0.0f));
+		// Lógica de colisión aquí
 	}
+
+
 }
+
 void Mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
 	/*float xpos = xposIn;
@@ -329,6 +345,7 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 			//Tipo 1 = Personaje
 			//tipo 2 = Huevos
 			//tipo 3 = gallinas
+			//tipo 4 = puño / ataque 
 			if (cube.type == 2 || cube.type == 3)
 			{
 				// Reposicionar cubo en la parte superior si sale de la pantalla
@@ -336,6 +353,7 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 					cube.position.y = 12.5f;
 					cube.position.x = ((rand() % 200) / 100.0f - 1.0f) * width / 80; // posición x aleatoria
 					cube.speed = ((rand() % 100) / 100.0f) * 2.0f + 1.5f;
+					cube.type = 2 + (rand() % 2);
 				}
 			}
 
@@ -347,6 +365,21 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 				cube.position.x = std::min(cube.position.x, 5.0f);
 				cube.position.y = std::min(cube.position.y, 4.5f);
 
+				/*if (cube.position.y < 0.0f)
+				{
+					cube.position.y = 0.0f;
+				}*/
+			}
+			if (cube.type == 4)
+			{
+				cube.position.y += cube.speed;
+
+				if (cube.position.y > posCube[0].position.y + 3)  // Si han pasado menos de 1 segundo
+				{
+					 posCube[6].position = posCube[0].position;
+					 posCube[6].speed = 0;
+				}
+				//cube.position.x = posCube[0].position.x;
 				/*if (cube.position.y < 0.0f)
 				{
 					cube.position.y = 0.0f;
@@ -369,7 +402,7 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 		shader.setVec3("overrideColor", vec3(1.0f, 1.0f, 1.0f));  // Blanco o el color original
 	}*/
 
-		//seeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+	//seeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
 		TransformCamera(ourShader);
 		TransformCubo(ourShader, models);
@@ -549,15 +582,56 @@ AABB GenerateBoindingBox(vec3 position, float w, float h, float d)
 bool DetecCollision()
 {
 	bool col = false;
-	AABB cubeBox = GenerateBoindingBox(posCube[0].position, 1.0f, 1.0f, 1.0f);
-	AABB floorBox = GenerateBoindingBox(pisoPosCube[0], 5.0f, 0.1f, 5.0f);
 
-	if (AABBIntersect(cubeBox, floorBox))
+	// Generamos la caja de colisión para el jugador
+	AABB cajaPersonaje = GenerateBoindingBox(posCube[0].position, 1.0f, 1.0f, 1.0f);
+
+	// Iteramos sobre los enemigos (posCube[1] hasta posCube[6])
+	for (int i = 1; i < 6; ++i)
 	{
-		col = true;
+		// Generamos la caja de colisión para cada enemigo
+		AABB enemigo = GenerateBoindingBox(posCube[i].position, 1.0f, 1.0f, 1.0f);
+
+		// Si hay colisión, actualizamos el valor de col
+		if (AABBIntersect(cajaPersonaje, enemigo))
+		{
+			//std::cout << "Colisión con el enemigo #" << i << std::endl;
+			posCube.erase(posCube.begin() + i);
+			col = true;
+		}
 	}
+
 	return col;
 }
+
+bool colisionGuante()
+{
+	bool col = false;
+
+	// Generamos la caja de colisión para el jugador
+	AABB golpe = GenerateBoindingBox(posCube[6].position, 1.0f, 1.0f, 1.0f);
+
+	// Iteramos sobre los enemigos (posCube[1] hasta posCube[6])
+	for (int i = 1; i < 6; ++i)
+	{
+		// Generamos la caja de colisión para cada enemigo
+		AABB enemigo = GenerateBoindingBox(posCube[i].position, 1.0f, 1.0f, 1.0f);
+
+		// Si hay colisión, actualizamos el valor de col
+		if (AABBIntersect(golpe, enemigo))
+		{
+			std::cout << "Golope al enemigo #" << i << std::endl;
+			posCube[6].position = posCube[0].position;
+			posCube[6].speed = 0;
+			col = true;
+		}
+	}
+
+	return col;
+}
+
+
+
 
 bool CheckCollision(const vec3& cube1Pos, const vec3& cube2Pos, float size1, float size2) {
 	return abs(cube1Pos.x - cube2Pos.x) < (size1 + size2) / 2 &&
