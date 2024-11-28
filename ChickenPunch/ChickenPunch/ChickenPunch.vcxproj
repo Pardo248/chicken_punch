@@ -104,12 +104,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Librerias2\librerias\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\programacion_videojuegos\librerias\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Librerias2\librerias\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\programacion_videojuegos\librerias\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;kernel32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -121,14 +121,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Librerias2\librerias\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\programacion_videojuegos\librerias\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Librerias2\librerias\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\programacion_videojuegos\librerias\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>glfw3.lib;opengl32.lib;kernel32.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
