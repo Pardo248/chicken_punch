@@ -398,6 +398,8 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 			shader.setVec3("overrideColor", vec3(1.0f, 1.0f, 1.0f));  // Blanco o el color original
 		}*/
 
+		//seeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
+
 		TransformCamera(ourShader);
 		TransformCubo(ourShader,models);
 
