@@ -1,1 +1,15 @@
-﻿  ChickenPunch.vcxproj -> D:\programacion_videojuegos\chicken_punch\ChickenPunch\x64\Debug\ChickenPunch.exe
+﻿  main.cpp
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(118,12): warning C4244: 'argumento': conversión de 'time_t' a 'unsigned int'; posible pérdida de datos
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(299,28): warning C4244: 'argumento': conversión de 'double' a 'float'; posible pérdida de datos
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(305,20): warning C4244: 'inicializando': conversión de 'double' a 'float'; posible pérdida de datos
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(480,10): warning C4267: 'inicializando': conversión de 'size_t' a 'int'; posible pérdida de datos
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(543,10): warning C4267: 'inicializando': conversión de 'size_t' a 'int'; posible pérdida de datos
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(544,14): warning C4305: '=': truncamiento de 'double' a 'T'
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(544,14): warning C4305:         with
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(544,14): warning C4305:         [
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(544,14): warning C4305:             T=float
+E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\ChickenPunch\main.cpp(544,14): warning C4305:         ]
+LINK : warning LNK4098: la biblioteca predeterminada'MSVCRT' entra en conflicto con otras bibliotecas; use la biblioteca /NODEFAULTLIB:biblioteca
+  ChickenPunch.vcxproj -> E:\_ESCUELA\Semestre_7\Programacion_de_Videojuegos\Proyect_Chicken_Punch\chicken_punch\ChickenPunch\x64\Debug\ChickenPunch.exe
+  "pwsh.exe" no se reconoce como un comando interno o externo,
+  programa o archivo por lotes ejecutable.

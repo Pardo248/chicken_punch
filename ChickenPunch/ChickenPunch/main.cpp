@@ -132,7 +132,6 @@ int main()
 	models.push_back(Model("Modelos/backpack/personaje.obj"));
 	models.push_back(Model("Modelos/backpack/egg_obj.obj"));
 	models.push_back(Model("Modelos/backpack/gallo.obj"));
-	//models.push_back(Model("Modelos/backpack/Chick_lot(1).obj"));
 	models.push_back(Model("Modelos/backpack/guante.obj"));
 	
 	//updateWindow(window, ourShader, ourModel);
@@ -255,15 +254,25 @@ void PlayerInput(GLFWwindow* window)
 	}
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 	{
-		gravedadActive = true;
+
+		if (posCube.size() < 7)
+		{
+			float x = posCube[0].position.x;
+			float y = posCube[0].position.y;
+			float speed = -10.0f;
+			int type = 4;
+
+			posCube.push_back({ vec3(x, y, 0.0f), speed ,type });
+		}
+		
+		
 	}
 	if (DetecCollision())
 	{
 
 
-		
-		//posCube.push_back(vec3(x, y, 0.0f));
 	}
+	
 }
 void Mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
 {
@@ -326,6 +335,7 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 			//Tipo 1 = Personaje
 			//tipo 2 = Huevos
 			//tipo 3 = gallinas
+			//tipo 4 = puño / ataque 
 			if (cube.type == 2 || cube.type == 3)
 			{
 				// Reposicionar cubo en la parte superior si sale de la pantalla
@@ -344,6 +354,28 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 				cube.position.x = std::min(cube.position.x, 5.0f);
 				cube.position.y = std::min(cube.position.y, 4.5f);
 				
+				/*if (cube.position.y < 0.0f)
+				{
+					cube.position.y = 0.0f;
+				}*/
+			}
+			if (cube.type == 4)
+			{
+				if (cube.position.y > (posCube[0].position.y + 3)) {
+
+					cube.speed = cube.speed * -1;
+						
+
+				}
+				if (cube.position.y < posCube[0].position.y)
+				{
+					if (posCube.size() > 6)
+					{
+						posCube.pop_back();
+					}
+				}
+				
+				cube.position.x = posCube[0].position.x;
 				/*if (cube.position.y < 0.0f)
 				{
 					cube.position.y = 0.0f;
