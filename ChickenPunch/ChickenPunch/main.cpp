@@ -102,21 +102,21 @@ int main()
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-	
+
 	if (!gladLoad())
 	{
 		return -1;
 	}
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-	
+
 	//glfwSetCursorPosCallback(window, Mouse_callback);
 	//glfwSetScrollCallback(window, Scroll_callback);
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	stbi_set_flip_vertically_on_load(true);
 	srand(time(0));  // Semilla para la aleatoriedad
-	
+
 	glEnable(GL_DEPTH_TEST);
 
 	Shader ourShader("vertexShader.vs", "fragmentShader.fs");
@@ -126,7 +126,7 @@ int main()
 	GeneracionBuffer(VAO, VBO, EBO, vertices, sizeof(vertices), indices, sizeof(indices), VAO_L);
 	GeneracionBuffer(VAO_P, VBO_P, EBO_P, pisoVertices, sizeof(pisoVertices), pisoIndices, sizeof(pisoIndices), VAO_L);
 
-	
+
 	std::vector<Model> models;
 
 	models.push_back(Model("Modelos/backpack/personaje.obj"));
@@ -134,17 +134,17 @@ int main()
 	models.push_back(Model("Modelos/backpack/gallo.obj"));
 	//models.push_back(Model("Modelos/backpack/Chick_lot(1).obj"));
 	models.push_back(Model("Modelos/backpack/guante.obj"));
-	
-	//updateWindow(window, ourShader, ourModel);
 
+	//updateWindow(window, ourShader, ourModel);
+	float x;
+	float y;
+	int type;
+	float speed;
 	// Generar cubos al inicio
 	for (int i = 0; i < 6; ++i) {
 
-		float x;
-		float y;
-		int type;
-		float speed;
 		
+
 		if (i != 0)
 		{
 			x = ((rand() % 200) / 100.0f - 1.0f) * width / 80; // posición x aleatoria
@@ -160,17 +160,19 @@ int main()
 			type = 1;
 			speed = 0.0f;
 		}
-		                                    // parte superior de la pantalla
+		
+		// parte superior de la pantalla
 
-		posCube.push_back({ vec3(x, y, 0.0f), speed ,type});
+		posCube.push_back({ vec3(x, y, 0.0f), speed ,type });
 	}
-
-	updateWindow(window, ourShader, ourLight, ourShaderPiso, models);
 	
+	posCube.push_back({ vec3(0, 1.5, 0.0f), 0 , 4 });
+	updateWindow(window, ourShader, ourLight, ourShaderPiso, models);
+
 	DeleteVertexArrays(VAO);
 	DeleteVertexArrays(VAO_L);
 	DeleteBuffer(VBO, EBO);
-	
+
 	glfwTerminate();
 	return 0;
 }
@@ -252,6 +254,7 @@ void PlayerInput(GLFWwindow* window)
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		posCube[0].position.x += 0.01f;
+		posCube[3].position.x += 0.01f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS)
 	{
@@ -261,7 +264,7 @@ void PlayerInput(GLFWwindow* window)
 	{
 
 
-		
+
 		//posCube.push_back(vec3(x, y, 0.0f));
 	}
 }
@@ -308,12 +311,12 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		ourShader.use();
-		
+
 		ourShader.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
 		ourShader.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
 		ourShader.setVec3("dirLight.diffuse", 0.3f, 0.3f, 0.3f);
 		ourShader.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
-		
+
 		ourShader.setVec3("viewPos", camera.Position);
 
 		ourShader.setVec3("material.diffuse", 0.0f, 0.5f, 1.0f);
@@ -335,7 +338,7 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 					cube.speed = ((rand() % 100) / 100.0f) * 2.0f + 1.5f;
 				}
 			}
-			
+
 			//Limitar el movimiento del personaje
 			if (cube.type == 1)
 			{
@@ -343,31 +346,31 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 				cube.position.x = std::max(cube.position.x, -5.0f);
 				cube.position.x = std::min(cube.position.x, 5.0f);
 				cube.position.y = std::min(cube.position.y, 4.5f);
-				
+
 				/*if (cube.position.y < 0.0f)
 				{
 					cube.position.y = 0.0f;
 				}*/
 			}
 		}
-			/*// Verificar colisión con el cubo jugador
-			if (CheckCollision(pos, cube.position, 0.5f, 0.2f)) {
-				isColliding = true;
-			}
-			shader.setVec3("overrideColor", vec3(1.0f, 1.0f, 1.0f));
-			TransformCubo2(shader, cube.position);
+		/*// Verificar colisión con el cubo jugador
+		if (CheckCollision(pos, cube.position, 0.5f, 0.2f)) {
+			isColliding = true;
 		}
+		shader.setVec3("overrideColor", vec3(1.0f, 1.0f, 1.0f));
+		TransformCubo2(shader, cube.position);
+	}
 
-		// Cambiar color del cubo principal según colisión
-		if (isColliding) {
-			shader.setVec3("overrideColor", vec3(1.0f, 0.0f, 0.0f));  // Rojo
-		}
-		else {
-			shader.setVec3("overrideColor", vec3(1.0f, 1.0f, 1.0f));  // Blanco o el color original
-		}*/
+	// Cambiar color del cubo principal según colisión
+	if (isColliding) {
+		shader.setVec3("overrideColor", vec3(1.0f, 0.0f, 0.0f));  // Rojo
+	}
+	else {
+		shader.setVec3("overrideColor", vec3(1.0f, 1.0f, 1.0f));  // Blanco o el color original
+	}*/
 
 		TransformCamera(ourShader);
-		TransformCubo(ourShader,models);
+		TransformCubo(ourShader, models);
 
 
 
@@ -383,7 +386,7 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 		ourShaderPiso.setVec3("material.diffuse", 0.2f, 1.0f, 0.2f);
 		ourShaderPiso.setVec3("material.specular", 0.5f, 0.5f, 1.5f);
 		ourShaderPiso.setFloat("material.shininess", 32.0f);
-	
+
 		CameraUniform(ourShaderPiso);
 		TransformPiso(ourShaderPiso);
 
@@ -456,20 +459,20 @@ void TransformCubo(Shader ourShader, std::vector<Model> models)
 			modelo = glm::rotate(modelo, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 			modelo = glm::rotate(modelo, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		}
-		
+
 		ourShader.setMat4("model", modelo);
 
 		//models[2].Draw(ourShader);
 
 		models[posCube[i].type - 1].Draw(ourShader);
 
-		
-		glDrawElements(GL_TRIANGLES, sizeof(indices)/sizeof(indices[0]), GL_UNSIGNED_INT, 0);
+
+		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 	}
 
 }
 
-void TransformPiso(Shader ourShader) 
+void TransformPiso(Shader ourShader)
 {
 	glBindVertexArray(VAO_P);
 	mat4 modelo = mat4(1.0f);
@@ -515,12 +518,12 @@ void updatePhysics(float deltaTime)
 	{
 		posCube[i].position.y -= posCube[i].speed;//cuboVel.y *deltaTime;
 	}
-	
+
 
 	/*if (posCube[0].y < 0.0f)
 	{
 		posCube[0].y = 0.0f;
-		cuboVel.y = 0; 
+		cuboVel.y = 0;
 	}*/
 }
 
