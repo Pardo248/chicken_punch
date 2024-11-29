@@ -104,6 +104,15 @@ vector<unsigned int> indicesA = {
 	0, 1, 2, // Primer triángulo
 	2, 3, 0  // Segundo triángulo
 };
+
+string directory = "Modelos/backpack";
+std::vector<unsigned int> textures;
+//unsigned int textureID1;// = TextureFromFile("malla.jpg", directory);
+//unsigned int textureID2;// = TextureFromFile("egg_obj.jpg", directory);
+
+int health_i = 5;
+int points = 0;
+
 int main()
 {
 	initGLFWVersion();
@@ -143,26 +152,15 @@ int main()
 
 
 	std::vector<Model> models;
-
+	
 	models.push_back(Model("Modelos/backpack/personaje.obj"));
 	models.push_back(Model("Modelos/backpack/egg_obj.obj"));
 	models.push_back(Model("Modelos/backpack/gallo.obj"));
 	models.push_back(Model("Modelos/backpack/guante.obj"));
 
+	
 
-	string directory = "Modelos/backpack";
-	string texturePath = "malla.jpg";
-	unsigned int textureID = TextureFromFile(texturePath.c_str(), directory);
-
-	// Configura la textura
-	Texture texture;
-	texture.id = textureID;
-	texture.type = "texture_diffuse";
-	texture.path = texturePath;
-
-	// Crear la malla con la textura
-	vector<Texture> textures = { texture };
-	Mesh mesh(verticesA, indicesA, textures);
+	
 	//updateWindow(window, ourShader, ourModel);
 	float x;
 	float y;
@@ -194,6 +192,11 @@ int main()
 		posCube.push_back({ vec3(x, y, 0.0f), speed ,type });
 	}
 	posCube.push_back({ vec3(0, 1.5, 0.0f), 0.0f ,4 });
+	
+	textures.push_back(TextureFromFile("egg_obj.jpg", directory));
+	textures.push_back(TextureFromFile("malla.jpg", directory));
+	textures.push_back(TextureFromFile("oro.jpg", directory));
+
 	updateWindow(window, ourShader, ourLight, ourShaderPiso, models);
 
 	DeleteVertexArrays(VAO);
@@ -201,6 +204,11 @@ int main()
 	DeleteBuffer(VBO, EBO);
 
 	glfwTerminate();
+
+	while (getchar() != 'e')
+	{
+
+	}
 	return 0;
 }
 void initGLFWVersion()
@@ -229,9 +237,11 @@ void framebuffer_size_callback(GLFWwindow* window, int w, int h)
 }
 void processInput(GLFWwindow* window)
 {
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS || health_i < 0)
 	{
+		std::cout << "Puntos Totales: " << points << std::endl;
 		glfwSetWindowShouldClose(window, true);
+		
 	}
 	if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
 	{
@@ -271,29 +281,29 @@ void PlayerInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 	{
-		posCube[0].position.y += 0.01f;
-		posCube[6].position.y += 0.01f;
+		posCube[0].position.y += 0.1f;
+		posCube[6].position.y += 0.1f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
 	{
-		posCube[0].position.y -= 0.01f;
-		posCube[6].position.y -= 0.01f;
-	}
+		posCube[0].position.y -= 0.1f;
+		posCube[6].position.y -= 0.1f;
+	}	//
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
-		posCube[0].position.x -= 0.01f;
-		posCube[6].position.x -= 0.01f;
+		posCube[0].position.x -= 0.1f;
+		//posCube[6].position.x -= 0.1f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
-		posCube[0].position.x += 0.01f;
-		posCube[6].position.x += 0.01f;
+		posCube[0].position.x += 0.1f;
+		//posCube[6].position.x += 0.1f;
 	}
 
 	// Controlar el movimiento con la tecla F
 	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !isMoving)
 	{
-		moveStartTime = glfwGetTime();  // Guardar el tiempo en que se presiona F
+		//moveStartTime = glfwGetTime();  // Guardar el tiempo en que se presiona F
 		posCube[6].speed = 1;
 		
 	}
@@ -346,10 +356,10 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 
 		processInput(window);
 
-		if (gravedadActive)
-		{
-			updatePhysics(deltaTime);
-		}
+		
+		
+		updatePhysics(deltaTime);
+		
 
 		glClearColor(0.1f, 0.2f, 0.1f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -380,9 +390,11 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 				if (cube.position.y < 0.0f) {
 					cube.position.y = 12.5f;
 					cube.position.x = ((rand() % 200) / 100.0f - 1.0f) * width / 80; // posición x aleatoria
-					cube.speed = ((rand() % 100) / 100.0f) * 2.0f + 1.5f;
+					//cube.speed = ((rand() % 100) / 100.0f) * 2.0f + 1.5f;
 					cube.type = 2 + (rand() % 2);
 				}
+
+				
 			}
 
 			//Limitar el movimiento del personaje
@@ -400,6 +412,8 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 			}
 			if (cube.type == 4)
 			{
+				
+				cube.position.x = posCube[0].position.x;
 				cube.position.y += cube.speed;
 
 				if (cube.position.y > posCube[0].position.y + 3)  // Si han pasado menos de 1 segundo
@@ -517,16 +531,29 @@ void TransformCubo(Shader ourShader, std::vector<Model> models)
 	{
 		mat4 modelo = mat4(1.0f);
 		modelo = translate(modelo, posCube[i].position);
-		if (posCube[i].type == 1)
+		glActiveTexture(GL_TEXTURE0); // Unidad de textura 0
+		if (posCube[i].type == 1 )
 		{
 			modelo = glm::rotate(modelo, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 			modelo = glm::rotate(modelo, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+			
+			glBindTexture(GL_TEXTURE_2D, textures[0]); // Vincular textura 1
+		}else
+		{
+			if (posCube[i].type == 2)
+				glBindTexture(GL_TEXTURE_2D, textures[2]);
+			if (posCube[i].type == 3)
+				glBindTexture(GL_TEXTURE_2D, textures[1]);
+			if (posCube[i].type == 4)
+				glBindTexture(GL_TEXTURE_2D, textures[0]);
+			
 		}
 
+		ourShader.setInt("texture1", 0); // "texture1" corresponde a la unidad de textura 0
 		ourShader.setMat4("model", modelo);
 
-		//models[2].Draw(ourShader);
-
+		
 		models[posCube[i].type - 1].Draw(ourShader);
 
 
@@ -575,11 +602,12 @@ void CameraUniform(Shader shaderName)
 void updatePhysics(float deltaTime)
 {
 	int tam = posCube.size();
-	cuboVel.y = 0.1;// * deltaTime;
+	
 
-	for (int i = 1; i < tam; i++)
+	for (int i = 1; i < tam - 1; i++)
 	{
-		posCube[i].position.y -= posCube[i].speed;//cuboVel.y *deltaTime;
+		posCube[i].speed += posCube[i].speed * deltaTime * 0.1;
+		posCube[i].position.y -= posCube[i].speed * deltaTime;//cuboVel.y *deltaTime;
 	}
 
 
@@ -624,8 +652,19 @@ bool DetecCollision()
 		if (AABBIntersect(cajaPersonaje, enemigo))
 		{
 			//std::cout << "Colisión con el enemigo #" << i << std::endl;
-			posCube.erase(posCube.begin() + i);
+			posCube[i].position.y = 12.5f;
+			posCube[i].position.x = ((rand() % 200) / 100.0f - 1.0f) * width / 80; // posición x aleatoria
+			//posCube[i].speed = ((rand() % 100) / 100.0f) * 2.0f + 1.5f;
+			posCube[i].type = 2 + (rand() % 2);
 			col = true;
+			if (posCube[i].type == 3)
+			{
+				health_i --;
+			}
+			else
+			{
+				points ++;
+			}
 		}
 	}
 
@@ -637,7 +676,7 @@ bool colisionGuante()
 	bool col = false;
 	int tam = 6;
 
-	// Generamos la caja de colisión para el jugador
+	// Generamos la caja de colisión para el guante
 	AABB golpe = GenerateBoindingBox(posCube[6].position, 1.0f, 1.0f, 1.0f);
 
 	// Iteramos sobre los enemigos (posCube[1] hasta posCube[6])
@@ -649,7 +688,15 @@ bool colisionGuante()
 		// Si hay colisión, actualizamos el valor de col
 		if (AABBIntersect(golpe, enemigo))
 		{
-			std::cout << "Golope al enemigo #" << i << std::endl;
+			//std::cout << "Golope al enemigo #" << i << std::endl;
+			if (posCube[i].type == 3)
+			{
+				posCube[i].position.y = 12.5f;
+				posCube[i].position.x = ((rand() % 200) / 100.0f - 1.0f) * width / 80; // posición x aleatoria
+				posCube[i].speed = ((rand() % 100) / 100.0f) * 2.0f + 1.5f;
+				posCube[i].type = 2 + (rand() % 2);
+			}
+
 			posCube[6].position = posCube[0].position;
 			posCube[6].speed = 0;
 			col = true;
