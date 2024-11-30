@@ -23,6 +23,7 @@ struct Vertex
     float useDiffuseTexture;
 };
 
+
 struct Texture {
     unsigned int id;
     string type;

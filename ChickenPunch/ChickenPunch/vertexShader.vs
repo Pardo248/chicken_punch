@@ -31,5 +31,5 @@ void main()
     Color = aColor;
 
     // Indicador para decidir si usar textura (se puede ajustar externamente)
-    UseTexture = 0.0f; 
+    UseTexture = 1.0f; 
 }
