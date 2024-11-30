@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <map>
 
 #include "glad/glad.h"
 #include "GLFW/glfw3.h"
@@ -10,7 +11,6 @@
 
 #include "Shader.h"
 #include "Cubo.h"
-#include "Piso.h"
 #include "Camera.h"
 #include "Model.h"
 #include "stb_image.h"
@@ -53,8 +53,6 @@ void framebuffer_size_callback(GLFWwindow* window, int w, int h);
 void processInput(GLFWwindow* window);
 void CameraInput(GLFWwindow* window);
 void PlayerInput(GLFWwindow* window);
-void Mouse_callback(GLFWwindow* window, double xpos, double ypos);
-void Scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 
 void GeneracionBuffer(
 	GLuint& VAO,
@@ -69,16 +67,13 @@ void VertexAttribute(int layout, int data, int total, int start);
 void DeleteVertexArrays(GLuint& VA);
 void DeleteBuffer(GLuint& VBO, GLuint& EBO);
 void TransformCubo(Shader ourShader, std::vector<Model> models);
-void TransformPiso(Shader ourShader);
 void TransformCuboLight(Shader ourLight);
 void TransformCamera(Shader ourShader);
 void CameraUniform(Shader shaderName);
 void updatePhysics(float deltaTime);
-
 bool AABBIntersect(AABB box1, AABB box2);
 AABB GenerateBoindingBox(vec3 position, float w, float h, float d);
 bool DetecCollision();
-bool CheckCollision(const vec3& cube1Pos, const vec3& cube2Pos, float size1, float size2);
 bool colisionGuante();
 
 // Límites para la proyección ortogonal
@@ -106,9 +101,15 @@ vector<unsigned int> indicesA = {
 };
 
 string directory = "Modelos/backpack";
+
 std::vector<unsigned int> textures;
-//unsigned int textureID1;// = TextureFromFile("malla.jpg", directory);
-//unsigned int textureID2;// = TextureFromFile("egg_obj.jpg", directory);
+
+std::map<int, int> textureMapping = {// Sijeto al orden en el que se agregan las texturas 
+	{2, 2},
+	{3, 1},
+	{4, 0}
+};
+
 
 int health_i = 5;
 int points = 0;
@@ -134,9 +135,6 @@ int main()
 
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	//glfwSetCursorPosCallback(window, Mouse_callback);
-	//glfwSetScrollCallback(window, Scroll_callback);
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	stbi_set_flip_vertically_on_load(true);
 	srand(time(0));  // Semilla para la aleatoriedad
@@ -148,17 +146,14 @@ int main()
 	Shader ourLight("vertexLight.vl", "fragmentLight.fl");
 
 	GeneracionBuffer(VAO, VBO, EBO, vertices, sizeof(vertices), indices, sizeof(indices), VAO_L);
-	GeneracionBuffer(VAO_P, VBO_P, EBO_P, pisoVertices, sizeof(pisoVertices), pisoIndices, sizeof(pisoIndices), VAO_L);
 
 
 	std::vector<Model> models;
 	
-	models.push_back(Model("Modelos/backpack/personaje.obj"));
+	models.push_back(Model("Modelos/backpack/PJ3.obj"));
 	models.push_back(Model("Modelos/backpack/egg_obj.obj"));
 	models.push_back(Model("Modelos/backpack/gallo.obj"));
 	models.push_back(Model("Modelos/backpack/guante.obj"));
-
-	
 
 	
 	//updateWindow(window, ourShader, ourModel);
@@ -187,11 +182,10 @@ int main()
 			type = 1;
 			speed = 0.0f;
 		}
-		// parte superior de la pantalla
 
 		posCube.push_back({ vec3(x, y, 0.0f), speed ,type });
 	}
-	posCube.push_back({ vec3(0, 1.5, 0.0f), 0.0f ,4 });
+	posCube.push_back({ vec3(0, 1.0, 0.0f), 0.0f ,4 });
 	
 	textures.push_back(TextureFromFile("egg_obj.jpg", directory));
 	textures.push_back(TextureFromFile("malla.jpg", directory));
@@ -252,31 +246,8 @@ void processInput(GLFWwindow* window)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 
-	CameraInput(window);
 	PlayerInput(window);
 }
-void CameraInput(GLFWwindow* window)
-{
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS)
-	{
-		camera.ProcessKeyboard(FORWARD, deltaTime);
-	}
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS)
-	{
-		camera.ProcessKeyboard(BACKWARD, deltaTime);
-	}
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS)
-	{
-		camera.ProcessKeyboard(LEFT, deltaTime);
-	}
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS)
-	{
-		camera.ProcessKeyboard(RIGHT, deltaTime);
-	}
-}
-float moveStartTime = -1.0f;  // Almacena el momento en que se presiona F
-bool isMoving = false;        // Controla el estado del movimiento (avanzando o retrocediendo)
-
 void PlayerInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -288,22 +259,19 @@ void PlayerInput(GLFWwindow* window)
 	{
 		posCube[0].position.y -= 0.1f;
 		posCube[6].position.y -= 0.1f;
-	}	//
+	}	
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
 	{
 		posCube[0].position.x -= 0.1f;
-		//posCube[6].position.x -= 0.1f;
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
 	{
 		posCube[0].position.x += 0.1f;
-		//posCube[6].position.x += 0.1f;
 	}
 
-	// Controlar el movimiento con la tecla F
-	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS && !isMoving)
+	// Controlar el Ataque con la tecla F
+	if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS )
 	{
-		//moveStartTime = glfwGetTime();  // Guardar el tiempo en que se presiona F
 		posCube[6].speed = 1;
 		
 	}
@@ -312,40 +280,10 @@ void PlayerInput(GLFWwindow* window)
 		colisionGuante();
 	}
 		
-		
-
-	if (DetecCollision())
-	{
-		// Lógica de colisión aquí
-	}
-
+	DetecCollision();
 
 }
 
-void Mouse_callback(GLFWwindow* window, double xposIn, double yposIn)
-{
-	/*float xpos = xposIn;
-	float ypos = yposIn;
-
-	if (firstMouse)
-	{
-		lastX = xpos;
-		lastY = ypos;
-		firstMouse = false;
-	}
-
-	float xoffset = xpos - lastX;
-	float yoffset = lastY - ypos;
-
-	lastX = xpos;
-	lastY = ypos;
-
-	camera.ProcessMouseMovement(xoffset, yoffset);*/
-}
-void Scroll_callback(GLFWwindow* window, double xoffset, double yoffset)
-{
-	camera.ProcessMouseScroll(yoffset);
-}
 void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader ourShaderPiso, std::vector<Model> models)
 {
 	while (!glfwWindowShouldClose(window))
@@ -356,7 +294,6 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 
 		processInput(window);
 
-		
 		
 		updatePhysics(deltaTime);
 		
@@ -390,7 +327,6 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 				if (cube.position.y < 0.0f) {
 					cube.position.y = 12.5f;
 					cube.position.x = ((rand() % 200) / 100.0f - 1.0f) * width / 80; // posición x aleatoria
-					//cube.speed = ((rand() % 100) / 100.0f) * 2.0f + 1.5f;
 					cube.type = 2 + (rand() % 2);
 				}
 
@@ -401,14 +337,11 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 			if (cube.type == 1)
 			{
 				cube.position.y = std::max(cube.position.y, -1.5f);
+				cube.position.y = std::min(cube.position.y, 4.5f);
 				cube.position.x = std::max(cube.position.x, -5.0f);
 				cube.position.x = std::min(cube.position.x, 5.0f);
-				cube.position.y = std::min(cube.position.y, 4.5f);
-
-				/*if (cube.position.y < 0.0f)
-				{
-					cube.position.y = 0.0f;
-				}*/
+				
+				
 			}
 			if (cube.type == 4)
 			{
@@ -416,58 +349,18 @@ void updateWindow(GLFWwindow* window, Shader ourShader, Shader ourLight, Shader 
 				cube.position.x = posCube[0].position.x;
 				cube.position.y += cube.speed;
 
-				if (cube.position.y > posCube[0].position.y + 3)  // Si han pasado menos de 1 segundo
+				if (cube.position.y > posCube[0].position.y + 3) //SI sobrepasa el ALcance 
 				{
-					 posCube[6].position = posCube[0].position;
-					 posCube[6].speed = 0;
+					 cube.position = posCube[0].position;
+					 cube.position.y = posCube[0].position.y - 1.0f;
+					 cube.speed = 0;
 				}
-				//cube.position.x = posCube[0].position.x;
-				/*if (cube.position.y < 0.0f)
-				{
-					cube.position.y = 0.0f;
-				}*/
+				
 			}
 		}
-		/*// Verificar colisión con el cubo jugador
-		if (CheckCollision(pos, cube.position, 0.5f, 0.2f)) {
-			isColliding = true;
-		}
-		shader.setVec3("overrideColor", vec3(1.0f, 1.0f, 1.0f));
-		TransformCubo2(shader, cube.position);
-	}
-
-	// Cambiar color del cubo principal según colisión
-	if (isColliding) {
-		shader.setVec3("overrideColor", vec3(1.0f, 0.0f, 0.0f));  // Rojo
-	}
-	else {
-		shader.setVec3("overrideColor", vec3(1.0f, 1.0f, 1.0f));  // Blanco o el color original
-	}*/
-
-	//seeeeeeeeeeeeeeeeeeeeeeeeeeeeeee
 
 		TransformCamera(ourShader);
 		TransformCubo(ourShader, models);
-
-
-
-		ourShaderPiso.use();
-
-		ourShaderPiso.setVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
-		ourShaderPiso.setVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
-		ourShaderPiso.setVec3("dirLight.diffuse", 0.3f, 0.3f, 0.3f);
-		ourShaderPiso.setVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
-
-		ourShaderPiso.setVec3("viewPos", camera.Position);
-
-		ourShaderPiso.setVec3("material.diffuse", 0.2f, 1.0f, 0.2f);
-		ourShaderPiso.setVec3("material.specular", 0.5f, 0.5f, 1.5f);
-		ourShaderPiso.setFloat("material.shininess", 32.0f);
-
-		CameraUniform(ourShaderPiso);
-		TransformPiso(ourShaderPiso);
-
-		//ourModel.Draw(ourShader);
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
@@ -525,52 +418,38 @@ void DeleteBuffer(GLuint& VBO, GLuint& EBO)
 }
 void TransformCubo(Shader ourShader, std::vector<Model> models)
 {
-	int tam = posCube.size();
 	glBindVertexArray(VAO);
-	for (int i = 0; i < tam; i++)
+
+	for (auto& item : posCube)
 	{
 		mat4 modelo = mat4(1.0f);
-		modelo = translate(modelo, posCube[i].position);
+		modelo = translate(modelo, item.position);
 		glActiveTexture(GL_TEXTURE0); // Unidad de textura 0
-		if (posCube[i].type == 1 )
+
+		if (item.type == 1)
 		{
 			modelo = glm::rotate(modelo, glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f));
 			modelo = glm::rotate(modelo, glm::radians(270.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
-			
 			glBindTexture(GL_TEXTURE_2D, textures[0]); // Vincular textura 1
-		}else
-		{
-			if (posCube[i].type == 2)
-				glBindTexture(GL_TEXTURE_2D, textures[2]);
-			if (posCube[i].type == 3)
-				glBindTexture(GL_TEXTURE_2D, textures[1]);
-			if (posCube[i].type == 4)
-				glBindTexture(GL_TEXTURE_2D, textures[0]);
-			
+
 		}
 
-		ourShader.setInt("texture1", 0); // "texture1" corresponde a la unidad de textura 0
+		auto it = textureMapping.find(item.type);
+		if (it != textureMapping.end()) {
+			glBindTexture(GL_TEXTURE_2D, textures[it->second]);// vincula la textura segun el MAPA al inicio 
+		}
+
+		ourShader.setInt("texture1", 0); // "texture1" corresponde a la unidad de textura 
 		ourShader.setMat4("model", modelo);
 
-		
-		models[posCube[i].type - 1].Draw(ourShader);
+		models[item.type - 1].Draw(ourShader);
 
 
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 	}
-
 }
 
-void TransformPiso(Shader ourShader)
-{
-	glBindVertexArray(VAO_P);
-	mat4 modelo = mat4(1.0f);
-	modelo = translate(modelo, pisoPosCube[0]);
-
-	ourShader.setMat4("model", modelo);
-	glDrawElements(GL_TRIANGLES, sizeof(pisoIndices) / sizeof(pisoIndices[0]), GL_UNSIGNED_INT, 0);
-}
 void TransformCuboLight(Shader ourLight)
 {
 	int tam = sizeof(posCubeLight) / sizeof(posCubeLight[0]);
@@ -584,7 +463,6 @@ void TransformCuboLight(Shader ourLight)
 		glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(indices[0]), GL_UNSIGNED_INT, 0);
 	}
 }
-
 
 void TransformCamera(Shader ourShader)
 {
@@ -601,21 +479,12 @@ void CameraUniform(Shader shaderName)
 
 void updatePhysics(float deltaTime)
 {
-	int tam = posCube.size();
-	
 
-	for (int i = 1; i < tam - 1; i++)
+	for (auto& item : posCube)
 	{
-		posCube[i].speed += posCube[i].speed * deltaTime * 0.1;
-		posCube[i].position.y -= posCube[i].speed * deltaTime;//cuboVel.y *deltaTime;
+		item.speed += item.speed * deltaTime * 0.1;
+		item.position.y -= item.speed * deltaTime;
 	}
-
-
-	/*if (posCube[0].y < 0.0f)
-	{
-		posCube[0].y = 0.0f;
-		cuboVel.y = 0;
-	}*/
 }
 
 bool AABBIntersect(AABB box1, AABB box2)
@@ -642,7 +511,6 @@ bool DetecCollision()
 	// Generamos la caja de colisión para el jugador
 	AABB cajaPersonaje = GenerateBoindingBox(posCube[0].position, 1.0f, 1.0f, 1.0f);
 
-	// Iteramos sobre los enemigos (posCube[1] hasta posCube[6])
 	for (int i = 1; i < 6; ++i)
 	{
 		// Generamos la caja de colisión para cada enemigo
@@ -651,12 +519,10 @@ bool DetecCollision()
 		// Si hay colisión, actualizamos el valor de col
 		if (AABBIntersect(cajaPersonaje, enemigo))
 		{
-			//std::cout << "Colisión con el enemigo #" << i << std::endl;
 			posCube[i].position.y = 12.5f;
 			posCube[i].position.x = ((rand() % 200) / 100.0f - 1.0f) * width / 80; // posición x aleatoria
-			//posCube[i].speed = ((rand() % 100) / 100.0f) * 2.0f + 1.5f;
 			posCube[i].type = 2 + (rand() % 2);
-			col = true;
+			
 			if (posCube[i].type == 3)
 			{
 				health_i --;
@@ -665,6 +531,7 @@ bool DetecCollision()
 			{
 				points ++;
 			}
+			col = true;
 		}
 	}
 
@@ -704,12 +571,4 @@ bool colisionGuante()
 	}
 
 	return col;
-}
-
-
-
-
-bool CheckCollision(const vec3& cube1Pos, const vec3& cube2Pos, float size1, float size2) {
-	return abs(cube1Pos.x - cube2Pos.x) < (size1 + size2) / 2 &&
-		abs(cube1Pos.y - cube2Pos.y) < (size1 + size2) / 2;
 }
